@@ -51,9 +51,15 @@ func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request
 
 // home is a function/handler that is called when directed to /snippet/create
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
-	title := "0 snail"
-	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
-	expires := "7"
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+	expires := r.PostForm.Get("expires")
 
 	id, err := app.snippets.Insert(title, content, expires)
 	if err != nil {
